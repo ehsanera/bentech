@@ -20,6 +20,10 @@ public class RolesService {
         return rolesRepository.findAll().stream().map(UserRolesEntity::toDto).collect(Collectors.toList());
     }
 
+    public RoleDto getById(Long id) {
+        return rolesRepository.findById(id).get().toDto();
+    }
+
     public RoleDto save(RoleCreateDto roleCreateDto) {
         return rolesRepository.save(roleCreateDto.to()).toDto();
     }
