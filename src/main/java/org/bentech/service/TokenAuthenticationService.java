@@ -4,8 +4,8 @@ import com.google.gson.Gson;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.bentech.config.ApplicationContextProvider;
-import org.bentech.dto.CustomUser;
-import org.bentech.dto.UserDto;
+import org.bentech.dto.user.CustomUser;
+import org.bentech.dto.user.UserDto;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class TokenAuthenticationService {
     private final Long EXPIRATION = 864000000L;
@@ -50,14 +49,14 @@ public class TokenAuthenticationService {
                 UserDto.class
         );
         if (profile != null) {
-            UserDto dto = userService.getByUserName(profile.name);
+            UserDto dto = userService.getByUserName(profile.userName);
             if (dto != null) {
                 List<SimpleGrantedAuthority> roles = dto.roles.stream().map(role ->
                         new SimpleGrantedAuthority("ROLE" + role)
                 ).toList();
                 return new UsernamePasswordAuthenticationToken(
                         new CustomUser(
-                                dto.name,
+                                dto.userName,
                                 dto.pass,
                                 roles
                         ), null, roles

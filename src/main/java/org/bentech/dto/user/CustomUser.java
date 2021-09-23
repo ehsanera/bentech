@@ -1,4 +1,4 @@
-package org.bentech.dto;
+package org.bentech.dto.user;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;

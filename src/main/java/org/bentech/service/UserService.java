@@ -1,6 +1,7 @@
 package org.bentech.service;
 
-import org.bentech.dto.UserDto;
+import org.bentech.dto.user.UserCreateDto;
+import org.bentech.dto.user.UserDto;
 import org.bentech.entity.UserEntity;
 import org.bentech.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,11 @@ public class UserService {
         return userRepository.findAll().stream().map(UserEntity::toDto).collect(Collectors.toList());
     }
 
-    public UserDto getByUserName(String name) {
-        return userRepository.findByUserName(name).toDto();
+    public UserDto getByUserName(String userName) {
+        return userRepository.findByUserName(userName).toDto();
     }
 
-    public UserDto getById(Long id) {
-        return userRepository.findById(id).get().toDto();
+    public UserDto save(UserCreateDto userDto) {
+        return userRepository.save(userDto.to()).toDto();
     }
 }

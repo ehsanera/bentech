@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
-    private HandlerExceptionResolver resolver =
+    private final HandlerExceptionResolver resolver =
             (HandlerExceptionResolver) new ApplicationContextProvider()
                     .applicationContext()
                     .getBean("handlerExceptionResolver");

@@ -1,7 +1,7 @@
 package org.bentech.service;
 
-import org.bentech.dto.CustomUser;
-import org.bentech.dto.UserDto;
+import org.bentech.dto.user.CustomUser;
+import org.bentech.dto.user.UserDto;
 import org.bentech.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             List<SimpleGrantedAuthority> roles = user.roles.stream().map(role ->
                     new SimpleGrantedAuthority("ROLE" + role)
             ).toList();
-            return new CustomUser(user.name, user.pass, roles);
+            return new CustomUser(user.userName, user.pass, roles);
         } else {
             return null;
         }
