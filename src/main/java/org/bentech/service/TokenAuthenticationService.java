@@ -10,31 +10,33 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import java.util.*;
-import java.util.logging.Logger;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Logger;
 
 public class TokenAuthenticationService {
-    private Long EXPIRATION  = 0L;
-    private String SECRET = "";
-    private const String TOKEN_PREFIX = "Bearer";
-    private const String HEADER_STRING = "Authorization";
+    private final Long EXPIRATION = 864000000L;
+    private final String SECRET = "ThisIsASecret@Ehsan";
+    private final String TOKEN_PREFIX = "Bearer";
+    private final String HEADER_STRING = "Authorization";
 
-    private UserService userService =(UserService)  new ApplicationContextProvider().applicationContext().getBean("authRepository");
+    private final UserService userService = (UserService) new ApplicationContextProvider().applicationContext().getBean("authRepository");
 
-    public void addAuthentication(HttpServletResponse res , Authentication principal ) {
-        CustomUser userProfile = ((CustomUser) principal.getPrincipal()).profile;
+    public void addAuthentication(HttpServletResponse res, Authentication principal) {
+        UserDto userProfile = ((CustomUser) principal.getPrincipal()).profile;
         String jwt = Jwts.builder()
                 .setSubject(new Gson().toJson(userProfile))
-                .setExpiration(new Date(System.currentTimeMillis() + 864000000))
-                .signWith(SignatureAlgorithm.HS512, "ThisIsASecret@Ehsan")
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
-        res.addHeader("Authorization", "$TOKEN_PREFIX $jwt");
+        res.addHeader(HEADER_STRING, "$TOKEN_PREFIX $jwt");
     }
 
-    public Authentication getAuthentication(HttpServletRequest request , HttpServletResponse response ) {
-        String token = request.getHeader("Authorization");
+    public Authentication getAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader(HEADER_STRING);
         if (token != null && !token.isBlank()) {
             return getAuthentication(token, response);
         } else {
@@ -42,38 +44,29 @@ public class TokenAuthenticationService {
         }
     }
 
-    private Authentication getAuthentication(String token ,HttpServletResponse response ) {
-        String profile = new Gson().fromJson(
-                Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).body.subject,
+    private Authentication getAuthentication(String token, HttpServletResponse response) {
+        UserDto profile = new Gson().fromJson(
+                Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody().getSubject(),
                 UserDto.class
-        )
+        );
         if (profile != null) {
-            val dto = loadUserById(profile.userId)
-            return if (dto != null) {
-                val userRoles = dto.roles.map { SimpleGrantedAuthority("ROLE_$it") }.toMutableList()
-                UsernamePasswordAuthenticationToken(
-                        CustomUser(
-                                dto,
-                                dto.userId,
-                                dto.transactionHash,
-                                userRoles
-                        ), null, userRoles
-                )
+            UserDto dto = userService.getByUserName(profile.name);
+            if (dto != null) {
+                List<SimpleGrantedAuthority> roles = dto.roles.stream().map(role ->
+                        new SimpleGrantedAuthority("ROLE" + role)
+                ).toList();
+                return new UsernamePasswordAuthenticationToken(
+                        new CustomUser(
+                                dto.name,
+                                dto.pass,
+                                roles
+                        ), null, roles
+                );
             } else {
-                Logger.getGlobal().info(profile.toString())
-                Logger.getGlobal().info(TenantContext.getCurrentTenant().toString())
-                throw AuthenticationCredentialsNotFoundException("user not found!")
+                throw new AuthenticationCredentialsNotFoundException("user not found!");
             }
         } else {
-            throw AuthenticationCredentialsNotFoundException("JWT not found!")
+            throw new AuthenticationCredentialsNotFoundException("JWT not found!");
         }
-    }
-
-    private fun loadUserById(id: Int): AuthDto? {
-        val user = authRepository.findByIdOrNull(id)?.toDto()
-        user?.let {
-            return user
-        }
-        return null
     }
 }

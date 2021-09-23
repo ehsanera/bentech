@@ -8,15 +8,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ApplicationContextProvider implements ApplicationContextAware {
 
-    private ApplicationContext context = null;
+    private static ApplicationContext context = null;
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
         context = applicationContext;
     }
 
     public ApplicationContext applicationContext() {
         return context;
     }
-
 }

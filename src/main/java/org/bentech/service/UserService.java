@@ -1,7 +1,7 @@
 package org.bentech.service;
 
 import org.bentech.dto.UserDto;
-import org.bentech.entity.User;
+import org.bentech.entity.UserEntity;
 import org.bentech.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,10 +16,14 @@ public class UserService {
     UserRepository userRepository;
 
     public List<UserDto> getAll() {
-        return userRepository.findAll().stream().map(User::toDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(UserEntity::toDto).collect(Collectors.toList());
     }
 
-    public UserDto getByName(String name) {
-        return userRepository.findByName(name).toDto();
+    public UserDto getByUserName(String name) {
+        return userRepository.findByUserName(name).toDto();
+    }
+
+    public UserDto getById(Long id) {
+        return userRepository.findById(id).get().toDto();
     }
 }
