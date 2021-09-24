@@ -5,9 +5,3 @@ CREATE TABLE users(
     pass varchar(200) NOT NULL,
     roles varchar(200) NOT NULL
 );
-
-CREATE TABLE roles(
-    id BIGSERIAL NOT NULL primary key,
-    role_name varchar(200) NOT NULL
-);
-

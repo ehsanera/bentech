@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TokenAuthenticationService {
     private final Long EXPIRATION = 864000000L;
@@ -51,9 +52,7 @@ public class TokenAuthenticationService {
         if (profile != null) {
             UserDto dto = userService.getByUserName(profile.userName);
             if (dto != null) {
-                List<SimpleGrantedAuthority> roles = dto.roles.stream().map(role ->
-                        new SimpleGrantedAuthority("ROLE" + role)
-                ).toList();
+                List<SimpleGrantedAuthority> roles = List.of(new SimpleGrantedAuthority("ROLE" + dto.roles));
                 return new UsernamePasswordAuthenticationToken(
                         new CustomUser(
                                 dto.userName,

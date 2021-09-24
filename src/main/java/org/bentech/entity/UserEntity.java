@@ -1,30 +1,26 @@
 package org.bentech.entity;
 
 import org.bentech.dto.user.UserDto;
+import org.bentech.enums.Roles;
 
 import javax.persistence.*;
-import java.util.Collection;
 
 @Entity
 @Table(name = "users")
 public class UserEntity {
     @Id
     @Column(name = "user_name", length = 50, nullable = false, unique = true)
-    private String userName;
+    String userName;
 
     @Column(name = "pass", length = 200, nullable = false)
-    private String pass;
+    String pass;
 
-    @ManyToMany
-    @JoinTable(
-            name = "roles",
-            joinColumns = @JoinColumn(
-                    name = "user_name", referencedColumnName = "user_name"),
-            inverseJoinColumns = @JoinColumn(
-                    name = "roles_id", referencedColumnName = "id"))
-    private Collection<UserRolesEntity> roles;
+    @Column(name = "roles", nullable = false)
+    @Enumerated(EnumType.STRING)
+    Roles roles;
 
-    public UserEntity(String userName, String pass, Collection<UserRolesEntity> roles) {
+
+    public UserEntity(String userName, String pass, Roles roles) {
         this.userName = userName;
         this.pass = pass;
         this.roles = roles;

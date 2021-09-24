@@ -1,7 +1,7 @@
 package org.bentech.dto.user;
 
 import org.bentech.entity.UserEntity;
-import org.bentech.entity.UserRolesEntity;
+import org.bentech.enums.Roles;
 
 import java.util.Collection;
 import java.util.List;
@@ -9,9 +9,9 @@ import java.util.List;
 public class UserCreateDto {
     public String userName;
     public String pass;
-    public List<Long> roles;
+    public Roles roles;
 
-    public UserCreateDto(String userName, String pass, List<Long> roles) {
+    public UserCreateDto(String userName, String pass, Roles roles) {
         this.userName = userName;
         this.pass = pass;
         this.roles = roles;
@@ -20,11 +20,11 @@ public class UserCreateDto {
     public UserCreateDto() {
     }
 
-    public UserEntity to(Collection<UserRolesEntity> roles) {
+    public UserEntity to() {
         return new UserEntity(
                 this.userName,
                 this.pass,
-                roles
+                this.roles
         );
     }
 }
