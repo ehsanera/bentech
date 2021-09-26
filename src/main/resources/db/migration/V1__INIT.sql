@@ -1,7 +1,8 @@
 CREATE SEQUENCE hibernate_sequence START 1;
 
 CREATE TABLE users(
-    user_name varchar(50) NOT NULL unique primary key,
-    pass varchar(200) NOT NULL,
-    roles varchar(200) NOT NULL
+    id bigserial primary key,
+    username varchar(50) NOT NULL unique,
+    password varchar(200) NOT NULL,
+    roles integer NOT NULL
 );

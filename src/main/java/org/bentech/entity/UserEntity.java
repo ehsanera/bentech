@@ -1,40 +1,60 @@
 package org.bentech.entity;
 
-import org.bentech.dto.user.UserDto;
-import org.bentech.enums.Roles;
+import org.bentech.dto.user.Role;
+
+import java.util.List;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "users")
 public class UserEntity {
+
     @Id
-    @Column(name = "user_name", length = 50, nullable = false, unique = true)
-    String userName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-    @Column(name = "pass", length = 200, nullable = false)
-    String pass;
+    @Size(min = 4, max = 255, message = "Minimum username length: 4 characters")
+    @Column(unique = true, nullable = false)
+    private String username;
 
-    @Column(name = "roles", nullable = false)
-    @Enumerated(EnumType.STRING)
-    Roles roles;
+    @Size(min = 8, message = "Minimum password length: 8 characters")
+    private String password;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    List<Role> roles;
 
-    public UserEntity(String userName, String pass, Roles roles) {
-        this.userName = userName;
-        this.pass = pass;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 
-    public UserEntity() {
-
-    }
-
-    public UserDto toDto() {
-        return new UserDto(
-                this.userName,
-                this.pass,
-                this.roles
-        );
-    }
 }
